@@ -10,7 +10,7 @@ import (
 )
 
 func init() {
-   functions.HTTP("HelloHTTP", helloHTTP)
+   functions.HTTP("img-share-api-func", imgShareAPIFunc)
 }
 
 func imgShareAPIFunc(w http.ResponseWriter, r *http.Request) {
