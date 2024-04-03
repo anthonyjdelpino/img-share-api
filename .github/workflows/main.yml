@@ -39,7 +39,7 @@ jobs:
           service_account: "github-actions-service-account@img-share-api-project.iam.gserviceaccount.com"
 
       - id: "deploy"
-        uses: "google-github-actions/deploy-cloud-functions@v0"
+        uses: "google-github-actions/deploy-cloud-functions@v2"
         with:
           # Name of the Cloud Function, same as the entry point name
           name: "helloWorld"
