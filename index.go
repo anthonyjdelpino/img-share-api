@@ -25,5 +25,5 @@ func imgShareAPIFunc(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprint(w, "Hello, World! Success 2")
 		return
 	}
-	fmt.Fprintf(w, "Hello, %s! S", html.EscapeString(d.Name))
+	fmt.Fprintf(w, "Hello, %s! Success 3", html.EscapeString(d.Name))
 }
