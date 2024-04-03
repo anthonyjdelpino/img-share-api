@@ -42,9 +42,10 @@ jobs:
         uses: "google-github-actions/deploy-cloud-functions@v2"
         with:
           # Name of the Cloud Function, same as the entry point name
-          name: "img-share-api"
+          name: "img-share-api-func"
           # Runtime to use for the function
           runtime: "go121"
+          region: "us-central1"
 
       # Example of using the output
       - id: "test"
