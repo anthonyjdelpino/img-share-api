@@ -13,8 +13,7 @@ func init() {
    functions.HTTP("HelloHTTP", helloHTTP)
 }
 
-// helloHTTP is an HTTP Cloud Function with a request parameter.
-func helloHTTP(w http.ResponseWriter, r *http.Request) {
+func imgShareAPIFunc(w http.ResponseWriter, r *http.Request) {
   var d struct {
     Name string `json:"name"`
   }
