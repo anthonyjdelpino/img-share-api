@@ -14,11 +14,15 @@ import (
 	"cloud.google.com/go/storage"
 	"github.com/GoogleCloudPlatform/functions-framework-go/functions"
 	"github.com/gin-gonic/gin"
+	"google.golang.org/api/iterator"
+	"google.golang.org/api/option"
 )
 
 type StorageUser struct {
-	userClient *storage.Client
-	filePath   string
+	userClient   *storage.Client
+	context      *context.Context
+	bucketHandle *storage.BucketHandle
+	filePath     string
 }
 
 const (
@@ -34,18 +38,22 @@ func init() {
 	route.GET("/images", getAllImages)
 	route.GET("/images/:id", getSpecificImage)
 	route.POST("/images", uploadImage)
-	route.DELETE("images/:id", deleteImage)
+	route.DELETE("/images/:id", deleteImage)
 
 	functions.HTTP("imgShareAPIFunc", route.Handler().ServeHTTP)
 
-	client, err := storage.NewClient(context.Background())
+	ctx := context.Background()
+	client, err := storage.NewClient(ctx, option.WithoutAuthentication())
 	if err != nil {
 		log.Fatalf("Failed to create a Google Cloud Storage Client: %v", err)
 	}
 
+	bucket := client.Bucket(bucketName)
 	user = &StorageUser{
-		userClient: client,
-		filePath:   "/",
+		userClient:   client,
+		context:      &ctx,
+		bucketHandle: bucket,
+		filePath:     "images/",
 	}
 }
 
@@ -57,7 +65,23 @@ func imgShareAPIFunc(c *gin.Context) {
 }
 
 func getAllImages(c *gin.Context) {
-	c.String(http.StatusOK, "list all")
+	query := &storage.Query{Prefix: user.filePath}
+
+	var imageNames []string
+	it := user.bucketHandle.Objects(*user.context, query)
+	for {
+		attrs, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			log.Fatalf("Failed to iterate through objects in bucket: %v", err)
+		}
+
+		imageNames = append(imageNames, attrs.Name)
+	}
+
+	c.IndentedJSON(http.StatusOK, imageNames)
 }
 
 func getSpecificImage(c *gin.Context) {
