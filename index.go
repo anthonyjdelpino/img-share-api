@@ -1,5 +1,6 @@
-// package imgShareAPI
-package main
+package imgShareAPI
+
+//package main
 
 /*TODO:
 implement functions
