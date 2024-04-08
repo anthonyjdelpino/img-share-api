@@ -4,7 +4,6 @@ package main
 /*TODO:
 implement functions
 structured error messages
-authentication?
 */
 
 import (
@@ -84,6 +83,7 @@ func getAllImages(c *gin.Context) {
 		}
 
 		imageNames = append(imageNames, attrs.Name)
+		imageNames = append(imageNames, attrs.MediaLink)
 	}
 
 	c.IndentedJSON(http.StatusOK, imageNames)
@@ -104,6 +104,7 @@ func getSpecificImage(c *gin.Context) { //functions more like a search
 		}
 
 		imageNames = append(imageNames, attrs.Name)
+		imageNames = append(imageNames, attrs.MediaLink)
 	}
 
 	c.IndentedJSON(http.StatusOK, imageNames)
