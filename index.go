@@ -116,7 +116,7 @@ func getAllImages(c *gin.Context) {
 	c.JSON(http.StatusOK, imageListings)
 }
 
-// Return an image's information as identified by it's ID field
+// Return information about a specific image. Image is specified by its ID
 //
 //	-ID is derived by hex-encoding the image's Cloud Storage object's MD5 hash
 func getSpecificImage(c *gin.Context) {
@@ -203,7 +203,7 @@ func uploadImage(c *gin.Context) {
 	})
 }
 
-// Delete image, identified in request by ID field
+// Delete the image from Google Cloud Storage. Target image is specified by ID
 func deleteImage(c *gin.Context) {
 	query := &storage.Query{Prefix: user.filePath}
 
