@@ -4,9 +4,7 @@ import (
 	"context"
 	"encoding/hex"
 	"io"
-	"log"
 	"net/http"
-	"slices"
 	"strings"
 	"time"
 
@@ -57,7 +55,8 @@ func init() {
 	ctx := context.Background()
 	client, err := storage.NewClient(ctx)
 	if err != nil {
-		log.Fatalf("Failed to create a Google Cloud Storage Client: %v", err)
+		print("Failed to Create Google Cloud Storage Client.\n" + err.Error())
+		return
 	}
 	defer client.Close()
 
@@ -71,9 +70,8 @@ func init() {
 	}
 }
 
-// Here for the sake of Google Cloud Functions endpoint
 func imgShareAPIFunc(c *gin.Context) {
-	c.String(http.StatusOK, "img-share-api\nFile upload POST requests should be made with \"file\" as form name.\nSize limit is 50 MB")
+	c.String(http.StatusOK, "img-share-api\nFile upload POST requests should be made with \"file\" as form name.\nSize limit is 50 MB\nendpoints:\nimages/\nimages/<id>")
 }
 
 // Return a list of all images in the folder with a media link
@@ -104,7 +102,12 @@ func getAllImages(c *gin.Context) {
 			})
 			return
 		}
-		imageListings = append(imageListings, ImageListing{attrs.Name, "https://storage.googleapis.com/" + bucketName + "/" + attrs.Name, hex.EncodeToString(attrs.MD5)})
+		imageListings = append(imageListings,
+			ImageListing{
+				Name: attrs.Name,
+				Link: "https://storage.googleapis.com/" + bucketName + "/" + attrs.Name,
+				ID:   hex.EncodeToString(attrs.MD5),
+			})
 	}
 
 	if len(imageListings) == 0 {
@@ -116,7 +119,7 @@ func getAllImages(c *gin.Context) {
 	c.JSON(http.StatusOK, imageListings)
 }
 
-// Return an image's information as identified by it's ID field
+// Return information about a specific image. Image is specified by its ID
 //
 //	-ID is derived by hex-encoding the image's Cloud Storage object's MD5 hash
 func getSpecificImage(c *gin.Context) {
@@ -135,7 +138,12 @@ func getSpecificImage(c *gin.Context) {
 			return
 		}
 		if hex.EncodeToString(attrs.MD5) == c.Param("id") {
-			c.JSON(http.StatusOK, ImageListing{attrs.Name, "https://storage.googleapis.com/" + bucketName + "/" + attrs.Name, hex.EncodeToString(attrs.MD5)})
+			c.JSON(http.StatusOK,
+				ImageListing{
+					Name: attrs.Name,
+					Link: "https://storage.googleapis.com/" + bucketName + "/" + attrs.Name,
+					ID:   hex.EncodeToString(attrs.MD5),
+				})
 			return
 		}
 	}
@@ -174,7 +182,7 @@ func uploadImage(c *gin.Context) {
 		return
 	}
 	extension := file.Filename[strings.LastIndex(file.Filename, "."):len(file.Filename)]
-	if !slices.Contains(validFileTypes, extension) {
+	if !contains(validFileTypes, extension) {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "Incorrect filetype or file name. Please use an image file of approved type",
 			"types": validFileTypes,
@@ -190,20 +198,21 @@ func uploadImage(c *gin.Context) {
 		return
 	}
 
+	//Requests canceled after 60 seconds
 	_, cancel := context.WithTimeout(c, time.Second*10)
 	defer cancel()
 
 	//Create storage writer to write new object to bucket
-	wc := *user.client.Bucket(bucketName).Object(user.filePath + file.Filename).NewWriter(*user.context)
-	io.Copy(&wc, blob)
-	wc.Close()
+	writer := *user.client.Bucket(bucketName).Object(user.filePath + file.Filename).NewWriter(*user.context)
+	io.Copy(&writer, blob)
+	writer.Close()
 
 	c.JSON(http.StatusOK, gin.H{
 		"message": file.Filename + " uploaded successfully",
 	})
 }
 
-// Delete image, identified in request by ID field
+// Delete the image from Google Cloud Storage. Target image is specified by ID
 func deleteImage(c *gin.Context) {
 	query := &storage.Query{Prefix: user.filePath}
 
@@ -213,7 +222,7 @@ func deleteImage(c *gin.Context) {
 	_, err := it.Next()
 	if err == iterator.Done {
 		c.JSON(http.StatusOK, gin.H{
-			"error": "Image not found. Folder is empty",
+			"error": "Image not found. Folder may be empty",
 		})
 	}
 	for {
@@ -247,7 +256,7 @@ func deleteImage(c *gin.Context) {
 		object = object.If(storage.Conditions{GenerationMatch: attrs.Generation})
 		name := object.ObjectName()
 
-		_, cancel := context.WithTimeout(c, time.Second*10)
+		_, cancel := context.WithTimeout(c, time.Second*60)
 		defer cancel()
 		if err := object.Delete(c); err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{
@@ -261,4 +270,13 @@ func deleteImage(c *gin.Context) {
 			return
 		}
 	}
+}
+
+func contains(arr []string, str string) bool {
+	for _, item := range arr {
+		if item == str {
+			return true
+		}
+	}
+	return false
 }
