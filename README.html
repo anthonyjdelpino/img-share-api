@@ -1,0 +1,37 @@
+ <div align="center">
+ <a href="https://github.com/anthonyjdelpino/img-share-api">
+  <h1>img-share-api</h1>
+  </a>
+
+
+</div>
+
+<p><img src="https://github.com/anthonyjdelpino/img-share-api/actions/workflows/main.yml/badge.svg?branch=prod" alt="deploystatus"></p>
+<p>img-share-api is a RESTful image sharing API written in GoLang, hosted on Google Cloud Functions, and deployed with GitHub Actions :)</p>
+<h3 id="built-with">Built With</h3>
+<ul>
+<li><img src="https://img.shields.io/badge/github%20actions-%232671E5.svg?style=for-the-badge&amp;logo=githubactions&amp;logoColor=white" alt="GitHub Actions"></li>
+<li><img src="https://img.shields.io/badge/go-%2300ADD8.svg?style=for-the-badge&amp;logo=go&amp;logoColor=white" alt="Go"></li>
+<li><img src="https://img.shields.io/badge/GoogleCloud-%234285F4.svg?style=for-the-badge&amp;logo=google-cloud&amp;logoColor=white" alt="Google Cloud"></li>
+</ul>
+<p>&nbsp;</p>
+<h2 id="usage">Usage</h2>
+<p>The API is currently being hosted at the following URL: </p>
+<p><a href="https://us-central1-img-share-api-project.cloudfunctions.net/img-share-api-func">https://us-central1-img-share-api-project.cloudfunctions.net/img-share-api-func</a></p>
+<p>The following are the API endpoints:</p>
+<p><code>/</code></p>
+<p><code>/images</code></p>
+<p><code>/images/&lt;id&gt;</code></p>
+<p>&nbsp;</p>
+<p>To get all image listings, send a GET request to the <code>/images</code> endpoint:</p>
+<pre><code class="lang-bash">curl https://us-central1-img-share-api-project.cloudfunctions.net/img-share-api-<span class="hljs-function"><span class="hljs-keyword">func</span>/<span class="hljs-title">images</span></span>
+</code></pre>
+<p>To get a specific image listing, send a GET request to the <code>images/&lt;id&gt;</code> endpoint, where <code>&lt;id&gt;</code> is the ID of the image:</p>
+<pre><code class="lang-bash">curl https://us-central1-img-share-api-project.cloudfunctions.net/img-share-api-<span class="hljs-function"><span class="hljs-keyword">func</span>/<span class="hljs-title">images</span>/<span class="hljs-title">IMAGE</span>-<span class="hljs-title">ID</span></span>
+</code></pre>
+<p>To upload an image, send a POST request to the <code>/images</code> endpoint:</p>
+<pre><code class="lang-bash">curl -X POST <span class="hljs-string">"https://us-central1-img-share-api-project.cloudfunctions.net/img-share-api-func/images"</span> -F <span class="hljs-keyword">file</span>=@<span class="hljs-regexp">/PATH/</span>TO<span class="hljs-regexp">/YOUR/</span>IMAGE
+</code></pre>
+<p>To delete an image, send a DELETE request to the <code>images/&lt;id&gt;</code> endpoint, where <code>&lt;id&gt;</code> is the ID of the image:</p>
+<pre><code class="lang-bash">curl -X <span class="hljs-keyword">DELETE</span> <span class="hljs-string">"https://us-central1-img-share-api-project.cloudfunctions.net/img-share-api-func/images/IMAGE-ID"</span>
+</code></pre>

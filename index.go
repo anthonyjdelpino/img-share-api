@@ -45,7 +45,14 @@ var user *StorageUser
 func main() {
 	//start Gin engine and set routes from API points to handler functions
 	route := gin.Default()
-	route.GET("/", imgShareAPIFunc)
+
+	//route.GET("/", imgShareAPIFunc)
+	route.GET("/", func(c *gin.Context) {
+		route.LoadHTMLFiles("./README.html")
+		c.HTML(http.StatusOK, "README.html", gin.H{
+			"content": "this is the readme",
+		})
+	})
 	route.GET("/images", getAllImages)
 	route.GET("/images/:id", getSpecificImage)
 	route.POST("/images", uploadImage)
@@ -74,9 +81,10 @@ func main() {
 	route.Run("localhost:8080")
 }
 
-func imgShareAPIFunc(c *gin.Context) {
-	c.String(http.StatusOK, "img-share-api\nFile upload POST requests should be made with \"file\" as form name.\nSize limit is 50 MB\nendpoints:\nimages/\nimages/<id>")
-}
+// func imgShareAPIFunc(c *gin.Context) { //HTML HERE
+
+// 	c.String(http.StatusOK, "img-share-api\nFile upload POST requests should be made with \"file\" as form name.\nSize limit is 50 MB\nendpoints:\nimages/\nimages/<id>")
+// }
 
 // Return a list of all images in the folder with a media link
 func getAllImages(c *gin.Context) {

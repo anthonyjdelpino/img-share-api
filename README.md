@@ -21,7 +21,7 @@ img-share-api is a RESTful image sharing API written in GoLang, hosted on Google
 
 ## Usage
 
-You can use a browser or curl to invoke the API at the current endpoint: 
+The API is currently being hosted at the following URL: 
 
 [https://us-central1-img-share-api-project.cloudfunctions.net/img-share-api-func](https://us-central1-img-share-api-project.cloudfunctions.net/img-share-api-func)
 
