@@ -1,0 +1,5 @@
+.gcloudignore
+.git
+.github
+README.md
+logo.svg
