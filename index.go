@@ -1,5 +1,6 @@
-// package imgShareAPI
-package main
+package imgShareAPI
+
+//package main
 
 import (
 	"context"
@@ -41,8 +42,8 @@ var validFileTypes = []string{".jpg", ".jpeg", ".jpe", ".jif", ".jfif", ".jfi", 
 
 var user *StorageUser
 
-// func init() {
-func main() {
+func init() {
+	//func main() {
 	//start Gin engine and set routes from API points to handler functions
 	route := gin.Default()
 
@@ -78,7 +79,7 @@ func main() {
 		filePath:     "images/",
 	}
 
-	route.Run("localhost:8080")
+	//route.Run("localhost:8080")
 }
 
 // func imgShareAPIFunc(c *gin.Context) { //HTML HERE
