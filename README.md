@@ -1,9 +1,12 @@
 
+ <div align="center">
  <a href="https://github.com/anthonyjdelpino/img-share-api">
-    <img src="logo.png" alt="Logo" width="80" height="80">
+    <img src="logo.svg" alt="Logo" width="80" height="80">
   </a>
 
 # img-share-api
+</div>
+
 ![deploystatus](https://github.com/anthonyjdelpino/img-share-api/actions/workflows/main.yml/badge.svg?branch=prod)
 
 
