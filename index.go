@@ -7,6 +7,7 @@ import (
 	"encoding/hex"
 	"io"
 	"net/http"
+	"os"
 	"strings"
 	"time"
 
@@ -30,8 +31,9 @@ type ImageListing struct {
 }
 
 const (
-	projectName = "img-share-api-project"
-	bucketName  = "img-share-api-func-bucket"
+	projectName         = "img-share-api-project"
+	bucketName          = "img-share-api-func-bucket"
+	gcloudFuncSourceDir = "serverless_function_source_code"
 )
 
 // All acceptable filetypes for upload
@@ -43,13 +45,15 @@ var validFileTypes = []string{".jpg", ".jpeg", ".jpe", ".jif", ".jfif", ".jfi", 
 var user *StorageUser
 
 func init() {
+	//Correct source directory if necessary as Functions environment is in .serverless_function_source_code
+	fixDir()
 	//func main() {
 	//start Gin engine and set routes from API points to handler functions
+
 	route := gin.Default()
 
-	//route.GET("/", imgShareAPIFunc)
 	route.GET("/", func(c *gin.Context) {
-		route.LoadHTMLFiles("./README.html")
+		route.LoadHTMLFiles("README.html")
 		c.HTML(http.StatusOK, "README.html", gin.H{
 			"content": "this is the readme",
 		})
@@ -81,11 +85,6 @@ func init() {
 
 	//route.Run("localhost:8080")
 }
-
-// func imgShareAPIFunc(c *gin.Context) { //HTML HERE
-
-// 	c.String(http.StatusOK, "img-share-api\nFile upload POST requests should be made with \"file\" as form name.\nSize limit is 50 MB\nendpoints:\nimages/\nimages/<id>")
-// }
 
 // Return a list of all images in the folder with a media link
 func getAllImages(c *gin.Context) {
@@ -293,4 +292,12 @@ func contains(arr []string, str string) bool {
 		}
 	}
 	return false
+}
+
+// corrects the source directory if running on Functions
+func fixDir() {
+	fileInfo, err := os.Stat(gcloudFuncSourceDir)
+	if err == nil && fileInfo.IsDir() {
+		_ = os.Chdir(gcloudFuncSourceDir)
+	}
 }
