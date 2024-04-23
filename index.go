@@ -1,4 +1,5 @@
-package imgShareAPI
+// package imgShareAPI
+package main
 
 import (
 	"context"
@@ -40,7 +41,8 @@ var validFileTypes = []string{".jpg", ".jpeg", ".jpe", ".jif", ".jfif", ".jfi", 
 
 var user *StorageUser
 
-func init() {
+// func init() {
+func main() {
 	//start Gin engine and set routes from API points to handler functions
 	route := gin.Default()
 	route.GET("/", imgShareAPIFunc)
@@ -68,6 +70,8 @@ func init() {
 		bucketHandle: bucket,
 		filePath:     "images/",
 	}
+
+	route.Run("localhost:8080")
 }
 
 func imgShareAPIFunc(c *gin.Context) {
@@ -228,7 +232,10 @@ func deleteImage(c *gin.Context) {
 	for {
 		attrs, err := it.Next()
 		if err == iterator.Done {
-			break
+			c.JSON(http.StatusOK, gin.H{
+				"message": "No object was found with ID: " + c.Param("id"),
+			})
+			return
 		}
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{
@@ -240,10 +247,8 @@ func deleteImage(c *gin.Context) {
 			object = user.client.Bucket(bucketName).Object(attrs.Name)
 		}
 		if object == nil {
-			c.JSON(http.StatusInternalServerError, gin.H{
-				"error": "No object was found with ID: " + c.Param("id"),
-			})
-			return
+			print("object nil\n")
+			continue
 		}
 		attrs, err = object.Attrs(c)
 		if err != nil {
