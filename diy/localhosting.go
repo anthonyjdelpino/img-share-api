@@ -1,18 +1,14 @@
-package imgShareAPI
-
-//package main
+package main
 
 import (
 	"context"
 	"encoding/hex"
 	"io"
 	"net/http"
-	"os"
 	"strings"
 	"time"
 
 	"cloud.google.com/go/storage"
-	"github.com/GoogleCloudPlatform/functions-framework-go/functions"
 	"github.com/gin-gonic/gin"
 	"google.golang.org/api/iterator"
 )
@@ -31,9 +27,8 @@ type ImageListing struct {
 }
 
 const (
-	projectName         = "img-share-api-project"
-	bucketName          = "img-share-api-func-bucket"
-	gcloudFuncSourceDir = "serverless_function_source_code"
+	projectName = "YOUR-PROJECT-NAME"
+	bucketName  = "YOUR-BUCKET-NAME"
 )
 
 // All acceptable filetypes for upload
@@ -44,15 +39,13 @@ var validFileTypes = []string{".jpg", ".jpeg", ".jpe", ".jif", ".jfif", ".jfi", 
 
 var user *StorageUser
 
-func init() {
-	//Correct source directory if necessary as Functions environment is in .serverless_function_source_code
-	fixDir()
+func main() {
 	//start Gin engine and set routes from API points to handler functions
 
 	route := gin.Default()
 
 	route.GET("/", func(c *gin.Context) {
-		route.LoadHTMLFiles("README.html")
+		route.LoadHTMLFiles("../README.html")
 		c.HTML(http.StatusOK, "README.html", gin.H{
 			"content": "this is the readme",
 		})
@@ -61,8 +54,6 @@ func init() {
 	route.GET("/images/:id", getSpecificImage)
 	route.POST("/images", uploadImage)
 	route.DELETE("/images/:id", deleteImage)
-
-	functions.HTTP("imgShareAPIFunc", route.Handler().ServeHTTP)
 
 	//Create Google Cloud Platform API client
 	ctx := context.Background()
@@ -81,6 +72,8 @@ func init() {
 		bucketHandle: bucket,
 		filePath:     "images/",
 	}
+
+	route.Run("localhost:8080")
 }
 
 // Return a list of all images in the folder with a media link
@@ -289,12 +282,4 @@ func contains(arr []string, str string) bool {
 		}
 	}
 	return false
-}
-
-// corrects the source directory if running on Functions
-func fixDir() {
-	fileInfo, err := os.Stat(gcloudFuncSourceDir)
-	if err == nil && fileInfo.IsDir() {
-		_ = os.Chdir(gcloudFuncSourceDir)
-	}
 }
