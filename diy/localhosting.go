@@ -27,8 +27,9 @@ type ImageListing struct {
 }
 
 const (
-	projectName = "YOUR-PROJECT-NAME"
-	bucketName  = "YOUR-BUCKET-NAME"
+	projectName = "YOUR-PROJECT-NAME"   //your GCP project's ID
+	bucketName  = "YOUR-BUCKET-NAME"    //your GCS bucket's ID
+	imagePath   = "YOUR-PATH-TO-IMAGES" //the path to the images in your bucket
 )
 
 // All acceptable filetypes for upload
@@ -70,7 +71,7 @@ func main() {
 		client:       client,
 		context:      &ctx,
 		bucketHandle: bucket,
-		filePath:     "images/",
+		filePath:     imagePath,
 	}
 
 	route.Run("localhost:8080")

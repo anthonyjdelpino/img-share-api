@@ -61,4 +61,4 @@ curl -X DELETE "https://us-central1-img-share-api-project.cloudfunctions.net/img
 
 To try this project out locally, and with your own Google Cloud Platform and buckets, use the `diy/localhosting.go` file in this repository.
 
-You will need to change the names of the constants `projectName` and `bucketName`, and make sure your bucket is accessible to the program.
+You will need to change the names of the constants `projectName`, `bucketName`, and `imagePath`. You will also need to make sure your bucket is accessible to the program.
